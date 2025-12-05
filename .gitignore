@@ -1,0 +1,21 @@
+# .gitignore (simplified for hackathon)
+node_modules/
+*/node_modules/
+.env
+.DS_Store
+*.log
+__pycache__/
+*.pyc
+venv/
+env/
+build/
+dist/
+.coverage
+.nyc_output
+.vscode/
+.idea/
+*/.env
+package-lock.json
+backend/package-lock.json
+frontend/package-lock.json
+backend/.env
