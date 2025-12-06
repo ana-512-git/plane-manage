@@ -5,6 +5,11 @@ import './App.css';
 
 function App() {
   const [selectedAirport, setSelectedAirport] = useState(null);
+  const [backendStatus, setBackendStatus] = useState('');
+  const [mlTest, setMlTest] = useState('');
+  const [simStart, setSimStart] = useState('');
+  const [roundStart, setRoundStart] = useState('');
+  const [simEnd, setSimEnd] = useState('');
 
   // Date fictive pentru grafic (Stânga Jos) - poți să le iei din backend mai târziu
   const penaltyData = [
@@ -15,8 +20,128 @@ function App() {
     { name: 'Weather', valoare: 1890 },
   ];
 
+
+  const testML = async () => {
+    const response = await fetch('/api/test-ml', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: { test: 'sample data' } })
+    });
+    const result = await response.json();
+    setMlTest(result.message);
+  };
+
+
+  const startSim = async () => {
+    const payload = {
+      // nimic mmtan
+    };
+
+    try {
+      const response = await fetch('/api/start-sim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setSimStart(`Session Started! ID: ${result.data}`);
+      } else {
+        setSimStart(`Session Start Failed: ${result.error || 'Server error'}`);
+      }
+    } catch (error) {
+      setSimStart(`Network Error: ${error.message}`);
+    }
+  };
+
+  const startRound = async () => {
+    const testData = {
+      "day": 0,
+      "hour": 0,
+      "flightLoads": [
+        {
+          "flightId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "loadedKits": {
+            "first": 0,
+            "business": 0,
+            "premiumEconomy": 0,
+            "economy": 0
+          }
+        }
+      ],
+      "kitPurchasingOrders": {
+        "first": 0,
+        "business": 0,
+        "premiumEconomy": 0,
+        "economy": 0
+      }
+    }
+    const payload = testData;
+
+    try {
+      const response = await fetch('/api/start-round', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const result = await response.json();
+      console.log("round result is: ", result);
+
+      if (response.ok && result.success) {
+        setRoundStart(`Round Started! ID: ${result.data}`);
+      } else {
+        setRoundStart(`Round Start Failed: ${result.error || 'Server error'}`);
+      }
+    } catch (error) {
+      setRoundStart(`Network Error: ${error.message}`);
+    }
+  };
+
+  const endSim = async () => {
+    const payload = {
+      // nimic mmtan
+    };
+
+    try {
+      const response = await fetch('/api/end-sim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const result = await response.json();
+      console.log("end response: ", response);
+
+      if (response.ok && result.success) {
+        setSimEnd(`Session ended!`);
+      } else {
+        setSimEnd(`Session end Failed: ${result.error || 'Server error'}`);
+      }
+    } catch (error) {
+      setSimEnd(`Network Error: ${error.message}`);
+    }
+  };
+
   return (
     <div className="app-container">
+      <div style={{ padding: '20px' }}>
+      <h1>MERN + ML Project</h1>
+      <p>Backend: {backendStatus}</p>
+      <button onClick={testML}>Test ML Integration</button>
+      {mlTest && <p>ML Test: {mlTest}</p>}
+
+      <button onClick={startSim}>Start Simulation</button>
+      {simStart && <p>Received: {simStart}</p>}
+
+      <button onClick={endSim}>End Simulation</button>
+      {simEnd && <p>Received: {simEnd}</p>}
+
+      <button onClick={startRound}>Start round</button>
+      {roundStart && <p>Received: {roundStart}</p>}
+    </div>
       <h1 style={{ color: '#334155', marginBottom: '20px' }}>Rotables Optimization Dashboard</h1>
 
       {/* GRILA 2x2 */}

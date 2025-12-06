@@ -5,10 +5,10 @@ const axios = require('axios');
 // Target the running Docker container on the host's mapped port
 const ML_API_URL = 'http://localhost:5001/test-call'; // <-- New endpoint!
 
-class MLService {
+// class MLService {
   // ... constructor and other methods
 
-  async processData(data) {
+  async function processData(data) {
     try {
       // Send a POST request with the data
       const response = await axios.post(ML_API_URL, data);
@@ -21,6 +21,6 @@ class MLService {
       throw new Error(`Failed to communicate with Python ML API: ${error.message}`);
     }
   }
-}
+// }
 
-module.exports = new MLService();
+module.exports = {processData}
