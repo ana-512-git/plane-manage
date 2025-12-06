@@ -1,57 +1,25 @@
-const { spawn } = require('child_process');
-const path = require('path');
+// In your MERN backend: ml/mlService.js
+
+const axios = require('axios');
+
+// Target the running Docker container on the host's mapped port
+const ML_API_URL = 'http://localhost:5001/test-call'; // <-- New endpoint!
 
 class MLService {
-  constructor() {
-    this.pythonPath = path.join(__dirname, 'python', 'ml_model.py');
-    console.log('Python script path:', this.pythonPath); // Debug log
-  }
+  // ... constructor and other methods
 
   async processData(data) {
-    return new Promise((resolve, reject) => {
-      // Stringify data for command line
-      const dataString = JSON.stringify(data);
-      onsole.log('Calling Python with:', dataString); // Debug log
+    try {
+      // Send a POST request with the data
+      const response = await axios.post(ML_API_URL, data);
       
-      // Spawn Python process
-      const pythonProcess = spawn('python3', [this.pythonPath, dataString], {
-        cwd: path.dirname(this.pythonPath) // Run from script's directory
-      });
-      
-      let result = '';
-      let error = '';
+      // Return the JSON data received from the Python server
+      return response.data; 
 
-      // Collect data from Python stdout
-      pythonProcess.stdout.on('data', (data) => {
-        result += data.toString();
-      });
-
-      // Collect errors
-      pythonProcess.stderr.on('data', (data) => {
-        error += data.toString();
-      });
-
-      // Handle process completion
-      pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-          reject(new Error(`Python process exited with code ${code}: ${error}`));
-          return;
-        }
-        
-        try {
-          const parsedResult = JSON.parse(result);
-          resolve(parsedResult);
-        } catch (parseError) {
-          reject(new Error(`Failed to parse Python output: ${parseError.message}`));
-        }
-      });
-
-      pythonProcess.on('error', (err) => {
-        console.error('Failed to spawn Python:', err);
-        reject(new Error(`Failed to start Python: ${err.message}`));
-      });
-      
-    });
+    } catch (error) {
+      // Handle connection and API errors
+      throw new Error(`Failed to communicate with Python ML API: ${error.message}`);
+    }
   }
 }
 
