@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mlService = require('../ml/mlService');
 const external_api_controller = require('../external_api_controller');
 const ml_api_controller = require('../ml/ml_controller');
 

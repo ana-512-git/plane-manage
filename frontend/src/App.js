@@ -9,6 +9,9 @@ function App() {
   const [simStart, setSimStart] = useState('');
   const [roundStart, setRoundStart] = useState('');
   const [simEnd, setSimEnd] = useState('');
+  const [hour, setHour] = useState(0);
+  const [day, setDay] = useState(0);
+  const [playSim, setPlaySim] = useState('');
 
   // Date fictive pentru grafic (Stânga Jos) - poți să le iei din backend mai târziu
   const penaltyData = [
@@ -57,11 +60,11 @@ function App() {
 
   const startRound = async () => {
     const testData = {
-      "day": 0,
-      "hour": 0,
+      "day": day,
+      "hour": hour,
       "flightLoads": [
         {
-          "flightId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "flightId": "63a2022d-a90f-40fc-8c29-cad16627ae78",
           "loadedKits": {
             "first": 0,
             "business": 0,
@@ -78,6 +81,13 @@ function App() {
       }
     }
     const payload = testData;
+    if (hour === 23) {
+      setDay(day => day + 1);
+      setHour(hour => hour - 23);
+    } else {
+      setHour(hour => hour + 1);
+    }
+
 
     try {
       const response = await fetch('/api/start-round', {
@@ -90,7 +100,7 @@ function App() {
       console.log("round result is: ", result);
 
       if (response.ok && result.success) {
-        setRoundStart(`Round Started! ID: ${result.data}`);
+        setRoundStart(`Round Started! You received: ${result.data.day} and ${result.data.hour}`);
       } else {
         setRoundStart(`Round Start Failed: ${result.error || 'Server error'}`);
       }
@@ -124,10 +134,71 @@ function App() {
     }
   };
 
+  const runSim = async() => {
+      try {
+        let hour = 0, day = 0;
+        for (let i = 0; i < 720; i++) {
+          const testData = {
+            "day": day,
+            "hour": hour,
+            "flightLoads": [
+              {
+                "flightId": "63a2022d-a90f-40fc-8c29-cad16627ae78",
+                "loadedKits": {
+                  "first": 5,
+                  "business": 5,
+                  "premiumEconomy": 5,
+                  "economy": 5
+                }
+              }
+            ],
+            "kitPurchasingOrders": {
+              "first": 0,
+              "business": 0,
+              "premiumEconomy": 0,
+              "economy": 0
+            }
+          }
+          const payload = testData;
+          
+          if (hour == 23) {
+            day += 1;
+            hour = 0;
+          } else {
+            hour += 1;
+          }
+
+          try {
+            const response = await fetch('/api/start-round', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            
+            const result = await response.json();
+            console.log("round result is: ", result);
+
+            if (!response.ok || !result.success) {
+              setPlaySim(`Round Start Failed: ${result.error || 'Server error'}`);
+            }
+          } catch (error) {
+            setPlaySim(`Network Error: ${error.message}`);
+            break;
+          }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+  }
+
   return (
     <div className="app-container">
       <div style={{ padding: '20px' }}>
       <h1>MERN + ML Project</h1>
+
+      <button onClick={runSim}>Run the whole sim</button>
+      {mlTest && <p>ML Test: {mlTest}</p>}
+
       <button onClick={testML}>Test ML Integration</button>
       {mlTest && <p>ML Test: {mlTest}</p>}
 
