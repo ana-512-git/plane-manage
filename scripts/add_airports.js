@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-const FILE_PATH = './inputs/csv/airports.csv';
+const FILE_PATH = './inputs/csv/airports_with_stocks.csv';
 const MONGODB_URI = process.env.MONGODB_URI;
 const client = new MongoClient(MONGODB_URI);
 
@@ -19,7 +19,7 @@ async function ingestData() {
                 .on('data', (data) => {
                     results.push({
                         id: data.id,
-                        code: data.type_code,
+                        code: data.code,
                         name: data.name,
 
                         first_processing_time: parseInt(data.first_processing_time),
