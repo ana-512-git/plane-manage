@@ -1,6 +1,8 @@
 const axios = require('axios');
 const API_URL = process.env.API_URL;
 const API_KEY = process.env.API_KEY;
+const Flight = require('./models/Flights');
+const Flights = require('./models/Flights');
 let SESSION_ID;
 
 async function startSimulation(req, res) {
@@ -44,7 +46,7 @@ async function endSimulation(req, res){
 async function startRound(req, res) {
   try {
     const clientData = req.body;
-    const externalResponseData = await startRound(clientData);
+    const externalResponseData = await startRnd(clientData);
     console.log("received ", externalResponseData);
 
     res.json({
@@ -96,7 +98,7 @@ async function endSim(requestPayload) {
   }
 }
 
-async function startRound(requestPayload) {
+async function startRnd(requestPayload) {
   try {
     console.log("session id is: ", SESSION_ID);
     const response = await axios.post(`${API_URL}/api/v1/play/round`,requestPayload, {
@@ -105,17 +107,27 @@ async function startRound(requestPayload) {
         'SESSION-ID': SESSION_ID
       }
     });
-
-    // The data returned from the external API (can be a string, object, or array)
     return response.data; 
 
   } catch (error) {
-    // Log the detailed error (for server debugging)
-    console.error('New External API Request Failed:', error.response?.data || error.message);
+    console.error('External API Request Failed (Start Round):', error.response?.data || error.message);
     
-    // Throw a simple, client-safe error message
-    throw new Error(`New External API failed: ${error.response?.status} - ${error.response?.statusText || 'Connection error'}`);
+    if (error.response) {
+        throw new Error(`External API failed: ${error.response.status} - ${error.response.statusText}`);
+    } else {
+        throw new Error(`Connection Error: ${error.message}`);
+    }
   }
 }
 
-module.exports = { startSim, endSim, startRound, startSimulation, endSimulation, startRound };
+async function getFlightsByDate(req, res) {
+  try {
+    const flights = await Flights.findMany({"day" : req.data.day});
+    console.log("flights: ", flights);
+    return flights;
+  } catch (err) {
+    console.log(error);
+  }
+}
+
+module.exports = { startSim, endSim, startRnd, startSimulation, endSimulation, startRound, getFlightsByDate };
