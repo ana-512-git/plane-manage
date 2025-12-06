@@ -23,5 +23,10 @@
   "bugs": {
     "url": "https://github.com/ana-512-git/plane-manage/issues"
   },
-  "homepage": "https://github.com/ana-512-git/plane-manage#readme"
+  "homepage": "https://github.com/ana-512-git/plane-manage#readme",
+  "dependencies": {
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.2.3",
+    "mongoose": "^9.0.1"
+  }
 }
