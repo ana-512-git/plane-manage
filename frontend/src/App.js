@@ -5,7 +5,6 @@ import './App.css';
 
 function App() {
   const [selectedAirport, setSelectedAirport] = useState(null);
-  const [backendStatus, setBackendStatus] = useState('');
   const [mlTest, setMlTest] = useState('');
   const [simStart, setSimStart] = useState('');
   const [roundStart, setRoundStart] = useState('');
@@ -129,7 +128,6 @@ function App() {
     <div className="app-container">
       <div style={{ padding: '20px' }}>
       <h1>MERN + ML Project</h1>
-      <p>Backend: {backendStatus}</p>
       <button onClick={testML}>Test ML Integration</button>
       {mlTest && <p>ML Test: {mlTest}</p>}
 
