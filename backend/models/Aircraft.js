@@ -14,4 +14,4 @@ const aircraftSchema = new mongoose.Schema({
     economy_kits_capacity: { type: Number },
 }, { timestamps: true });
 
-module.exports = mongoose.model('Aircraft', aircraftSchema);
+module.exports = mongoose.model('AircraftConfig', aircraftSchema);
